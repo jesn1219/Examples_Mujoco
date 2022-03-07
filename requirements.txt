@@ -1,0 +1,14 @@
+
+
+conda install ffmpeg
+pip install matplotlib
+sudo apt install libx11-dev mesa-common-dev libglu1-mesa-dev libxrandr-dev libxi-dev libglew-dev
+conda install cython
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev libxslt-dev
+sudo apt install python3-dev
+conda install patchelf
+sudo apt-get install -y python-numpy python-dev cmake zlib1g-dev libjpeg-dev xvfb xorg-dev python-opengl libboost-all-dev libsdl2-dev swig
+
+pip install ipywidgets
+pip install gym-fetch
+
