@@ -10,8 +10,8 @@ MODEL_XML_PATH = os.path.join("fetch", "fetch_ant.xml")
 class FetchAntEnv(custom_env.CustomEnv, utils.EzPickle):
     def __init__(self, reward_type="sparse"):
         initial_qpos = {
-            "robot0:slide0": 0.405,
-            "robot0:slide1": 0.48,
+            "robot0:slide0": 0.0,
+            "robot0:slide1": 0.0,
             "robot0:slide2": 0.0,
         }
         custom_env.CustomEnv.__init__(

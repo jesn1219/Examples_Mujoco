@@ -5,12 +5,34 @@
 		<geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="0.005 1 0.001" type="box"></geom>
 		<geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="0.005 0.005 1" type="box"></geom>
 	</body>
-	<body childclass="robot0:fetch" name="robot0:base_link" pos="0.2869 0.2641 0">
-		<joint armature="0.0001" axis="1 0 0" damping="1e+11" name="robot0:slide0" pos="0 0 0" type="slide"></joint>
-		<joint armature="0.0001" axis="0 1 0" damping="1e+11" name="robot0:slide1" pos="0 0 0" type="slide"></joint>
-		<joint armature="0.0001" axis="0 0 1" damping="1e+11" name="robot0:slide2" pos="0 0 0" type="slide"></joint>
+
+	<body childclass="robot0:fetch" name="robot0:base_link" pos="0.0 0.0 0">
+		<!--
+	    <site name="robot0_x_axes" pos="0.1 0 0" size="0.1 0.01 0.01" rgba="1 0 0 1" type="box"></site>
+		<site name="robot0_y_axes" pos="0 0.1 0" size="0.01 0.1 0.01" rgba="0 1 0 1" type="box"></site>
+		<site name="robot0_z_axes" pos="0 0 0.1" size="0.01 0.01 0.1" rgba="0 0 1 1" type="box"></site>
+		-->
+		<joint armature="0.0001" axis="1 0 0" damping="1e+11" name="robot0:slide0" type="slide"></joint>
+		<joint armature="0.0001" axis="0 1 0" damping="1e+11" name="robot0:slide1" type="slide"></joint>
+		<joint armature="0.0001" axis="0 0 1" damping="1e+11" name="robot0:slide2" type="slide"></joint>
 		<inertial diaginertia="1.2869 1.2236 0.9868" mass="70.1294" pos="-0.0036 0 0.0014" quat="0.7605 -0.0133 -0.0061 0.6491"></inertial>
 		<geom mesh="robot0:base_link" name="robot0:base_link" material="robot0:base_mat" class="robot0:grey"></geom>
+
+		<!-- 바퀴 코드
+		<body name="robot0:left_wheel_link" pos="0 0.33 0.16">
+            <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="200" diaginertia="0.04411 0.02467 0.02467" />
+            <joint name="robot0:left_wheel" pos="0 0 0" axis="0 1 0" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="wheel" class="wheel"/>
+            <geom size="0.08 0.05" quat="0.707107 0.707106 0 0" type="cylinder" />
+        </body>
+        <body name="robot0:right_wheel_link" pos="0 -0.33 0.16">
+            <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="200" diaginertia="0.04411 0.02467 0.02467" />
+            <joint name="robot0:right_wheel" pos="0 0 0" axis="0 1 0" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="wheel" class="wheel"/>
+            <geom size="0.08 0.05" quat="0.707107 0.707106 0 0" type="cylinder" />
+        </body>
+		-->
+
 		<body name="robot0:torso_lift_link" pos="-0.0869 0 0.3774">
 			<inertial diaginertia="0.3365 0.3354 0.0943" mass="10.7796" pos="-0.0013 -0.0009 0.0335" quat="0.9993 -0.0006 0.0336 0.0185"></inertial>
 			<joint axis="0 0 1" damping="1e+07" name="robot0:torso_lift_joint" range="0.0386 0.3861" type="slide"></joint>
@@ -90,6 +112,7 @@
 											</body>
 											<body childclass="robot0:fetchGripper" name="robot0:l_gripper_finger_link" pos="0 -0.0159 0">
 												<inertial diaginertia="0.1 0.1 0.1" mass="4" pos="-0.01 0 0"></inertial>
+												<!-- joint를 가져옴 -->
 												<joint axis="0 -1 0" name="robot0:l_gripper_finger_joint" range="0 0.05"></joint>
 												<geom pos="0 0.008 0" size="0.0385 0.007 0.0135" type="box" name="robot0:l_gripper_finger_link" material="robot0:gripper_finger_mat" condim="4" friction="1 0.05 0.01"></geom>
 											</body>

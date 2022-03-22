@@ -6,28 +6,55 @@
 	</option>
 
 	<include file="shared.xml"></include>
-	
+	<!-- add assert -->
+
+
+
 	<worldbody>
-		<geom name="floor0" pos="0.8 0.75 0" size="5 5 5" type="plane" condim="3" material="floor_mat"></geom>
-		<body name="floor0" pos="0.8 0.75 0">
-			<site name="target0" pos="0 0 0.5" size="0.02 0.02 0.02" rgba="1 0 0 1" type="sphere"></site>
+		<!-- visulize x,y,z axis -->
+		<site name="x_axes" pos="0 0 0" size="0.5 0.01 0.01" rgba="1 0 0 1" type="box"></site>
+		<site name="y_axes" pos="0 0 0" size="0.01 0.5 0.01" rgba="0 1 0 1" type="box"></site>
+		<site name="z_axes" pos="0 0 0" size="0.01 0.01 0.5" rgba="0 0 1 1" type="box"></site>
+		
+		<!-- load floor -->
+		<geom name="floor0" pos="0 0 0" size="5 5 5" type="plane" condim="3" material="floor_mat"></geom>
+
+		<body pos="1.5 1.0 0.0" name="target0">
+			<include file="ant.xml"></include>
 		</body>
-		<include file="ant.xml"></include>
-		<include file="robot.xml"></include>	
+
+		<!-- load fetch robot -->
+		<include file="robot.xml"></include>
+
+
+		<!-- table위에 개미
+		<body pos="1.6 0.6 0.2" name="ant0">
+			<include file="ant.xml"></include>
+		</body>
+
+		<body pos="1.5 0.75 0" name="table0">
+			<geom size="0.5 0.5 0.2" type="box" mass="2000" material="table_mat" rgba="1 1 1 0.5"></geom>
+			<site name="table0_x_axes" pos="0.1 0 0" size="0.1 0.01 0.01" rgba="1 0 0 1" type="box"></site>
+			<site name="table0_y_axes" pos="0 0.1 0" size="0.01 0.1 0.01" rgba="0 1 0 1" type="box"></site>
+			<site name="table0_z_axes" pos="0 0 0.1" size="0.01 0.01 0.1" rgba="0 0 1 1" type="box"></site>
+		</body>
+		-->
 
 		<light directional="true" ambient="0.2 0.2 0.2" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3" castshadow="false" pos="0 0 4" dir="0 0 -1" name="light0"></light>
 	</worldbody>
 
 	<actuator>
-		<position ctrllimited="true" ctrlrange="0 0.2" joint="robot0:l_gripper_finger_joint" kp="30000" name="robot0:l_gripper_finger_joint" user="1"></position>
-		<position ctrllimited="true" ctrlrange="0 0.2" joint="robot0:r_gripper_finger_joint" kp="30000" name="robot0:r_gripper_finger_joint" user="1"></position>
-		<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_4" gear="150" name="hip_4" />
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_4" gear="150" name="ankle_4"/>
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_1" gear="150" name="hip_1"/>
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_1" gear="150" name="ankle_1"/>
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_2" gear="150" name="hip_2"/>
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_2" gear="150" name="ankle_2"/> 
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_3" gear="150" name="hip_3"/>
-    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_3" gear="150" name="ankle_3"/>
+		<position ctrllimited="true" ctrlrange="0 0.2" joint="robot0:l_gripper_finger_joint" kp="300" name="robot0:l_gripper_finger_joint" user="1"></position>
+		<position ctrllimited="true" ctrlrange="0 0.2" joint="robot0:r_gripper_finger_joint" kp="300" name="robot0:r_gripper_finger_joint" user="1"></position>
+		<position ctrllimited="true" ctrlrange="-1.0 1.0" joint="robot0:slide0" kp="20" name="robot0:slide0" user="1"></position>
+    	<position ctrllimited="true" ctrlrange="-1.0 1.0" joint="robot0:slide1" kp="20" name="robot0:slide1" user="1"></position>
+		<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_4" name="hip_4" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_4" name="ankle_4" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_1" name="hip_1" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_1" name="ankle_1" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_2" name="hip_2" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_2" name="ankle_2" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_3" name="hip_3" gear="1500"/>
+    	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="ankle_3" name="ankle_3" gear="1500"/>
 	</actuator>
 </mujoco>

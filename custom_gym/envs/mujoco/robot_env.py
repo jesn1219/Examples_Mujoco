@@ -32,6 +32,7 @@ class RobotEnv(gym.core.GoalEnv):
         self.viewer = None
         self._viewers = {}
 
+
         self.metadata = {
             "render.modes": ["human", "rgb_array"],
             "video.frames_per_second": int(np.round(1.0 / self.dt)),
@@ -71,6 +72,7 @@ class RobotEnv(gym.core.GoalEnv):
 
     def step(self, action):
         action = np.clip(action, self.action_space.low, self.action_space.high)
+        self.action = action # action log 찍기 위해서
         self._set_action(action)
         self.sim.step()
         self._step_callback()
@@ -113,6 +115,18 @@ class RobotEnv(gym.core.GoalEnv):
             return data[::-1, :, :]
         elif mode == "human":
             self._get_viewer(mode).render()
+    
+    def robot_get_obs(self):
+        """Returns all joint positions and velocities associated with
+        a robot.
+        """
+        if self.sim.data.qpos is not None and self.sim.model.joint_names:
+            names = [n for n in self.sim.model.joint_names if n.startswith("robot")]
+            return (
+                np.array([self.sim.data.get_joint_qpos(name) for name in names]),
+                np.array([self.sim.data.get_joint_qvel(name) for name in names]),
+            )
+        return np.zeros(0), np.zeros(0)
 
     def _get_viewer(self, mode):
         self.viewer = self._viewers.get(mode)
