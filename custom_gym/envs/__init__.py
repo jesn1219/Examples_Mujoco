@@ -74,3 +74,10 @@ register(
     max_episode_steps=1000,
     reward_threshold=6000.0,
 )
+
+register(
+    id=f"FetchMobile-v1",
+    entry_point="custom_gym.envs.mujoco.mobile:FetchMobileEnv",
+    max_episode_steps=1000,
+    reward_threshold=6000.0,
+)

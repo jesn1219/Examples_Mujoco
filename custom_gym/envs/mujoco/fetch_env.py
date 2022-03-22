@@ -80,7 +80,7 @@ class FetchEnv(robot_env.RobotEnv):
             self.sim.forward()
 
     def _set_action(self, action):
-        assert action.shape == (4,)
+        assert action.shape == (4,) # pos_ctrl(3), gripper_ctrl(1)
         action = (
             action.copy()
         )  # ensure that we don't change the action outside of this scope
@@ -93,7 +93,7 @@ class FetchEnv(robot_env.RobotEnv):
             1.0,
             0.0,
         ]  # fixed rotation of the end effector, expressed as a quaternion
-        gripper_ctrl = np.array([gripper_ctrl, gripper_ctrl])
+        gripper_ctrl = np.array([gripper_ctrl, gripper_ctrl]) 
         assert gripper_ctrl.shape == (2,)
         if self.block_gripper:
             gripper_ctrl = np.zeros_like(gripper_ctrl)

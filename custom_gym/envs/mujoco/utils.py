@@ -26,9 +26,12 @@ def robot_get_obs(sim):
 
 
 def ctrl_set_action(sim, action):
-    """For torque actuators it copies the action into mujoco ctrl field.
-    For position actuators it sets the target relative to the current qpos.
     """
+    For torque actuators it copies the action into mujoco ctrl field. (회전 actuator)
+    For position actuators it sets the target relative to the current qpos. (위치 actuator)
+    """
+    # qpos는 자유관절, 따라서 7개(3D posion + 4D quaterion orientation(env에서 1,0,1,0 으로 고정시켜둠))
+    
     if sim.model.nmocap > 0:
         _, action = np.split(action, (sim.model.nmocap * 7,))
     if sim.data.ctrl is not None:
@@ -50,10 +53,10 @@ def mocap_set_action(sim, action):
     constraint optimizer tries to center the welded body on the mocap.
     """
     if sim.model.nmocap > 0:
-        action, _ = np.split(action, (sim.model.nmocap * 7,))
+        action, _ = np.split(action, (sim.model.nmocap * 7,)) #qpos는 자유관절, 따라서 7개(3D posion + 4D quaterion orientation)
         action = action.reshape(sim.model.nmocap, 7)
 
-        pos_delta = action[:, :3]
+        pos_delta = action[:, :3] 
         quat_delta = action[:, 3:]
 
         reset_mocap2body_xpos(sim)

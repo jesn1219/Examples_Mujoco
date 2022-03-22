@@ -1,5 +1,4 @@
 import numpy as np
-from gym import utils
 from custom_gym.envs.mujoco import rotations, robot_env, utils
 from custom_gym.envs.mujoco import mujoco_env
 
@@ -25,6 +24,9 @@ class CustomEnv(robot_env.RobotEnv):
         exclude_current_positions_from_observation,
         distance_threshold,
         reward_type,
+        #has_object
+        #target_in_the_air
+        #target_o
     ):
 
         self.gripper_extra_height = gripper_extra_height
@@ -41,12 +43,9 @@ class CustomEnv(robot_env.RobotEnv):
         super(CustomEnv, self).__init__(
             model_path=model_path,
             n_substeps=n_substeps,
-            n_actions=4,
+            n_actions=6, # gripper(4) + fetch pos(2)
             initial_qpos=initial_qpos,
         )
-
-    # RobotEnv methods
-    # ----------------------------
 
     def compute_reward(self, achieved_goal, goal, info):
         # Compute distance between goal and the achieved goal.
@@ -57,48 +56,60 @@ class CustomEnv(robot_env.RobotEnv):
             return -d
 
     def _step_callback(self):
-        if self.block_gripper:
-            self.sim.data.set_joint_qpos("robot0:l_gripper_finger_joint", 0.0)
-            self.sim.data.set_joint_qpos("robot0:r_gripper_finger_joint", 0.0)
-            self.sim.forward()
+        # Fetch 이동
+        self.sim.data.set_joint_qpos("robot0:slide0", self.sim.data.ctrl[2])
+        self.sim.data.set_joint_qpos("robot0:slide1", self.sim.data.ctrl[3])
+        # 개미 이동    
+        self.sim.data.set_joint_qpos("hip_4", self.sim.data.get_joint_qpos("hip_4") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("ankle_4", self.sim.data.get_joint_qpos("ankle_4") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("hip_1", self.sim.data.get_joint_qpos("hip_1") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("ankle_1", self.sim.data.get_joint_qpos("ankle_1") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("hip_2", self.sim.data.get_joint_qpos("hip_2") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("ankle_2", self.sim.data.get_joint_qpos("ankle_2") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("hip_3", self.sim.data.get_joint_qpos("hip_3") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.data.set_joint_qpos("ankle_3", self.sim.data.get_joint_qpos("ankle_3") + np.random.uniform(low=0.1, high=0.2, size=1))
+        self.sim.forward()
 
     def _set_action(self, action):
-        assert action.shape == (4,)        
+        assert action.shape == (6,) # 현재는 랜덤하게 입력 받는 중  
         action = (
             action.copy()
         )  # ensure that we don't change the action outside of this scope
-        pos_ctrl, gripper_ctrl = action[:3], action[3]
+        
+        pos_ctrl, gripper_ctrl, fetch_pos = action[:3], action[3], action[4:6]
         pos_ctrl *= 0.05  # limit maximum change in position
+        fetch_pos *= 0.08
         rot_ctrl = [
             1.0,
             0.0,
             1.0,
             0.0,
         ]  # fixed rotation of the end effector, expressed as a quaternion
-        gripper_ctrl = np.array([gripper_ctrl, gripper_ctrl])
+        gripper_ctrl = np.array([gripper_ctrl, gripper_ctrl]) # gripper가 양쪽이므로
+
         assert gripper_ctrl.shape == (2,)
         if self.block_gripper:
             gripper_ctrl = np.zeros_like(gripper_ctrl)
 
-        action = np.concatenate([pos_ctrl, rot_ctrl, gripper_ctrl])
+        action = np.concatenate([pos_ctrl, rot_ctrl, gripper_ctrl, fetch_pos])
 
         # Apply action to simulation.        self.sim.data.ctrl[:] = ctrl
         utils.ctrl_set_action(self.sim, action)
-        utils.mocap_set_action(self.sim, action)
+        utils.mocap_set_action(self.sim, action) # pos_ctrl, rot_ctrl 
 
     def _get_obs(self):
         # Fetch obs
-        grip_pos = self.sim.data.get_site_xpos("robot0:grip")
+        ant_pos = self.sim.data.get_site_xpos("ant0:torso")
         dt = self.sim.nsubsteps * self.sim.model.opt.timestep
-        grip_velp = self.sim.data.get_site_xvelp("robot0:grip") * dt
+        ant_velp = self.sim.data.get_site_xvelp("ant0:torso") * dt
         robot_qpos, robot_qvel = utils.robot_get_obs(self.sim)
-
+        
         gripper_state = robot_qpos[-2:]
         gripper_vel = (
             robot_qvel[-2:] * dt
         )  # change to a scalar if the gripper is made symmetric
 
-        achieved_goal = grip_pos.copy()
+        achieved_goal = ant_pos.copy()
         
         # Ant obs
         position = self.sim.data.qpos.flat.copy()
@@ -110,9 +121,9 @@ class CustomEnv(robot_env.RobotEnv):
 
         obs = np.concatenate(
             [
-                grip_pos,
+                ant_pos,
                 gripper_state,
-                grip_velp,
+                ant_velp,
                 gripper_vel,
                 position,
                 velocity,
@@ -140,7 +151,7 @@ class CustomEnv(robot_env.RobotEnv):
         self.viewer.cam.elevation = -14.0
 
     def _sample_goal(self):
-        goal = self.initial_gripper_xpos[:3] + self.np_random.uniform(
+        goal = self.initial_ant_pos[:3] + self.np_random.uniform(
                 -self.target_range, self.target_range, size=3
             )
         return goal.copy()
@@ -148,7 +159,7 @@ class CustomEnv(robot_env.RobotEnv):
     def _render_callback(self):
         # Visualize target.
         sites_offset = (self.sim.data.site_xpos - self.sim.model.site_pos).copy()
-        site_id = self.sim.model.site_name2id("target0")
+        site_id = self.sim.model.body_name2id("target0")
         self.sim.model.site_pos[site_id] = self.goal - sites_offset[0]
         self.sim.forward()
 
@@ -171,18 +182,20 @@ class CustomEnv(robot_env.RobotEnv):
         # Move end effector into position.
         gripper_target = np.array(
             [-0.498, 0.005, -0.431 + self.gripper_extra_height]
-        ) + self.sim.data.get_site_xpos("robot0:grip")
+        ) + self.sim.data.get_site_xpos("ant0:torso")
         gripper_rotation = np.array([1.0, 0.0, 1.0, 0.0])
+        robot_xpos = self.sim.data.get_body_xpos("robot0:base_link")
         self.sim.data.set_mocap_pos("robot0:mocap", gripper_target)
         self.sim.data.set_mocap_quat("robot0:mocap", gripper_rotation)
         for _ in range(10):
             self.sim.step()
 
         # Extract information for sampling goals.
-        self.initial_gripper_xpos = self.sim.data.get_site_xpos("robot0:grip").copy()
+        self.initial_ant_pos = self.sim.data.get_site_xpos("ant0:torso").copy()
 
     def render(self, mode="human", width=500, height=500):
         return super(CustomEnv, self).render(mode, width, height)
+
     
     @property
     def contact_forces(self):
